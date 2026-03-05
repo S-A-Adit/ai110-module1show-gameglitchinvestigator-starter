@@ -4,6 +4,10 @@ Answer each question in 3 to 5 sentences. Be specific and honest about what actu
 
 ## 1. What was broken when you started?
 
+- It says go higher when it is supposed to go lower for the guessed number.
+- negative score
+- New game does not erase old game.
+- Range of 1 to 100 is not being maintained
 - What did the game look like the first time you ran it?
 - List at least two concrete bugs you noticed at the start  
   (for example: "the secret number kept changing" or "the hints were backwards").

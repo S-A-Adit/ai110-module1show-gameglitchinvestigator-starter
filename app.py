@@ -34,7 +34,8 @@ def check_guess(guess, secret):
         return "Win", "🎉 Correct!"
 
     try:
-        # FIXME: Messages are swapped — when guess > secret the hint should say Go LOWER, not Go HIGHER (see check_guess in #file:app.py)
+        # FIX: Claude Code confirmed the hint messages were swapped — "Go HIGHER" fired when guess > secret and "Go LOWER" when guess < secret.
+        # I verified by running test_too_high_message_says_go_lower in #file:tests/test_game_logic.py and manually guessing above the secret in the UI.
         if guess > secret:
             return "Too High", "📈 Go HIGHER!"
         else:
@@ -133,13 +134,16 @@ with col3:
     show_hint = st.checkbox("Show hint", value=True)
 
 if new_game:
-    # FIXME: Logic breaks here — new game only resets attempts and secret,
-    # but does not reset status, history, or score. After a win/loss,
-    # st.session_state.status remains "won"/"lost", so the game stops
-    # immediately on rerun (see #file:app.py line 141).
-    # All game state from #file:app.py session_state must be reset here.
+    # FIX: Claude Code identified that new_game only reset attempts and secret,
+    # leaving status/history/score stale from the previous game. Claude flagged
+    # the guard at line 146 as the point where a "won"/"lost" status would
+    # immediately halt the new game. I verified by reading session_state after
+    # a win and confirming the status field never changed back to "playing".
     st.session_state.attempts = 0
     st.session_state.secret = random.randint(1, 100)
+    st.session_state.status = "playing"
+    st.session_state.history = []
+    st.session_state.score = 0
     st.success("New game started.")
     st.rerun()
 

@@ -133,6 +133,11 @@ with col3:
     show_hint = st.checkbox("Show hint", value=True)
 
 if new_game:
+    # FIXME: Logic breaks here — new game only resets attempts and secret,
+    # but does not reset status, history, or score. After a win/loss,
+    # st.session_state.status remains "won"/"lost", so the game stops
+    # immediately on rerun (see #file:app.py line 141).
+    # All game state from #file:app.py session_state must be reset here.
     st.session_state.attempts = 0
     st.session_state.secret = random.randint(1, 100)
     st.success("New game started.")

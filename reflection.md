@@ -4,13 +4,7 @@ Answer each question in 3 to 5 sentences. Be specific and honest about what actu
 
 ## 1. What was broken when you started?
 
-- It says go higher when it is supposed to go lower for the guessed number.
-- negative score
-- New game does not erase old game.
-- Range of 1 to 100 is not being maintained
-- What did the game look like the first time you ran it?
-- List at least two concrete bugs you noticed at the start  
-  (for example: "the secret number kept changing" or "the hints were backwards").
+When I first ran the game, the hints were completely backwards — if my guess was too high, the game told me to go higher, which sent me in the wrong direction every time. Starting a new game after winning or losing didn't work either; the old game state was still there, so the game immediately showed "You already won" or "Game over" without letting me play again. The score could also go negative, and on certain attempts the game seemed impossible to win because the secret number was being compared as a string instead of an integer.
 
 ---
 
@@ -40,15 +34,18 @@ Claude Code helped design the new-game regression tests by explaining that Strea
 
 ## 4. What did you learn about Streamlit and state?
 
-- In your own words, explain why the secret number kept changing in the original app.
-- How would you explain Streamlit "reruns" and session state to a friend who has never used Streamlit?
-- What change did you make that finally gave the game a stable secret number?
+The secret number kept changing because Streamlit reruns the entire Python script from top to bottom every time a user interacts with anything — clicking a button, typing in a field, anything. Without session state, `random.randint()` was called fresh on each rerun, picking a new number every time. It was like the game forgot what it had just decided.
+
+I would explain Streamlit reruns to a friend like this: imagine every button click causes the whole program to restart from line one. Normal Python variables get reset each restart. `st.session_state` is a special dictionary that survives across those restarts — it's the game's memory.
+
+The fix was wrapping the initial `random.randint()` call in a guard: `if "secret" not in st.session_state`. That way, a new secret is only generated the very first time the app loads, and every subsequent rerun just reads the already-stored value.
 
 ---
 
 ## 5. Looking ahead: your developer habits
 
-- What is one habit or strategy from this project that you want to reuse in future labs or projects?
-  - This could be a testing habit, a prompting strategy, or a way you used Git.
-- What is one thing you would do differently next time you work with AI on a coding task?
-- In one or two sentences, describe how this project changed the way you think about AI generated code.
+One habit I want to reuse is writing regression tests the moment I fix a bug — not after. In this project, the tests for the swapped hints and the incomplete new-game reset forced me to clearly define what "fixed" meant before I could move on, which kept me from leaving half-done fixes in place.
+
+Next time I work with AI on a coding task I would ask it to show me the actual changed lines immediately, not just describe the fix in a comment. In this project, Claude added a `FIXME` comment explaining the bug without writing the corrected code in the same step, which made the code look annotated-and-done when it wasn't.
+
+This project changed how I read AI-generated code: I now treat it as a first draft that needs review, not a finished solution. The AI was right about diagnosing the bugs, but it still shipped code with wrong hint messages and incomplete state resets — things that only became obvious when the tests ran.

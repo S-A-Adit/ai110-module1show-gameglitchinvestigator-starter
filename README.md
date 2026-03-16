@@ -25,9 +25,24 @@ It wrote the code, ran away, and now the game is unplayable.
 
 ## 📝 Document Your Experience
 
-- [x] Describe the game's purpose.
-- [x] Detail which bugs you found.
-- [x] Explain what fixes you applied.
+### Game Purpose
+This is a number guessing game built with Streamlit. The player picks a difficulty, then tries to guess a randomly chosen secret number within a limited number of attempts. Each guess returns a hint (higher/lower) and updates a running score. The goal is to guess the secret number before running out of attempts.
+
+### Bugs Found
+
+1. **Swapped hint messages** — `check_guess()` returned "Go HIGHER!" when the guess was *above* the secret and "Go LOWER!" when it was *below*. This made the hints actively misleading — following them moved you further from the answer.
+
+2. **New game didn't fully reset state** — Clicking "New Game" only reset `attempts` and `secret`. The fields `status`, `history`, and `score` carried over from the previous game. Because the game loop checks `status` at the top and exits if it's `"won"` or `"lost"`, a completed game would immediately block the new one from starting.
+
+3. **Secret number type toggling** — On even-numbered attempts, the secret was cast to a string before being passed to `check_guess()`. An integer guess could never equal a string secret, so winning on even attempts was impossible regardless of the correct number.
+
+### Fixes Applied
+
+1. Corrected the hint messages in `check_guess()`: guess > secret now returns `"📉 Go LOWER!"` and guess < secret returns `"📈 Go HIGHER!"`.
+
+2. Updated the `new_game` handler to reset all five session state keys — `attempts`, `secret`, `status`, `history`, and `score` — so every new game starts from a clean slate.
+
+3. Diagnosed the type-toggle bug at the point where `secret` is passed to `check_guess()`; the cast to `str` on even attempts was the root cause of unwinnable even-turn rounds.
 
 ## 📸 Demo
 

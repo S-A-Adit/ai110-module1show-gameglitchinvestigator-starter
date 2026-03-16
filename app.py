@@ -37,9 +37,9 @@ def check_guess(guess, secret):
         # FIX: Claude Code confirmed the hint messages were swapped — "Go HIGHER" fired when guess > secret and "Go LOWER" when guess < secret.
         # I verified by running test_too_high_message_says_go_lower in #file:tests/test_game_logic.py and manually guessing above the secret in the UI.
         if guess > secret:
-            return "Too High", "📈 Go HIGHER!"
+            return "Too High", "📉 Go LOWER!"
         else:
-            return "Too Low", "📉 Go LOWER!"
+            return "Too Low", "📈 Go HIGHER!"
     except TypeError:
         g = str(guess)
         if g == secret:
